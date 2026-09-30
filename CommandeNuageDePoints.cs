@@ -59,7 +59,7 @@ public class CommandeNuageDePoints : IExternalCommand
             // ── 2. Aucun nuage → dialogue informatif ──────────────────────────
             if (nuages.Count == 0)
             {
-                TaskDialog.Show(TITRE_AUCUN, MSG_AUCUN);
+                Autodesk.Revit.UI.TaskDialog.Show(TITRE_AUCUN, MSG_AUCUN);
                 return Result.Succeeded;
             }
 
@@ -140,11 +140,7 @@ public class CommandeNuageDePoints : IExternalCommand
         sb.AppendLine($"  Nom          : {nom}");
 
         // ── Chemin du fichier source ──────────────────────────────────────────
-        // PointCloudType contient le chemin physique vers le fichier RCP/PCG/E57
-        PointCloudType? type = doc.GetElement(nuage.GetTypeId()) as PointCloudType;
-        string cheminFichier = type?.get_Parameter(BuiltInParameter.POINT_CLOUD_FILE_PATH)
-                                    ?.AsString()
-                               ?? "<chemin non disponible>";
+        string cheminFichier = ObtenirCheminFichier(doc, nuage);
         sb.AppendLine($"  Fichier      : {cheminFichier}");
 
         // ── Unités du document hôte ───────────────────────────────────────────
@@ -195,6 +191,32 @@ public class CommandeNuageDePoints : IExternalCommand
     }
 
     /// <summary>
+    /// Retourne le chemin du fichier source (RCP/RCS) via la référence de fichier externe
+    /// du <see cref="PointCloudType"/>, ou à défaut le nom du type.
+    /// </summary>
+    private static string ObtenirCheminFichier(Document doc, PointCloudInstance nuage)
+    {
+        ElementId typeId = nuage.GetTypeId();
+        try
+        {
+            if (ExternalFileUtils.IsExternalFileReference(doc, typeId))
+            {
+                ModelPath? chemin = ExternalFileUtils.GetExternalFileReference(doc, typeId)?.GetAbsolutePath();
+                if (chemin != null)
+                    return ModelPathUtils.ConvertModelPathToUserVisiblePath(chemin);
+            }
+        }
+        catch (Autodesk.Revit.Exceptions.ApplicationException)
+        {
+        }
+
+        string? nomType = doc.GetElement(typeId)?.Name;
+        return string.IsNullOrWhiteSpace(nomType)
+            ? "<chemin non disponible>"
+            : $"<chemin non disponible – type « {nomType} »>";
+    }
+
+    /// <summary>
     /// Détermine le statut de calage d'un nuage de points.
     /// <para>
     /// Heuristique : si la transformation est identité, le nuage n'a pas été
@@ -221,11 +243,11 @@ public class CommandeNuageDePoints : IExternalCommand
     }
 
     /// <summary>
-    /// Affiche le rapport dans un <see cref="TaskDialog"/> Revit multi-lignes.
+    /// Affiche le rapport dans un <see cref="Autodesk.Revit.UI.TaskDialog"/> Revit multi-lignes.
     /// </summary>
     private static void AfficherRapport(string rapport, int nombreNuages)
     {
-        TaskDialog dlg = new(TITRE_DIALOG)
+        Autodesk.Revit.UI.TaskDialog dlg = new(TITRE_DIALOG)
         {
             MainInstruction = $"{nombreNuages} nuage(s) de points inventorié(s)",
             MainContent     = rapport,
@@ -235,18 +257,18 @@ public class CommandeNuageDePoints : IExternalCommand
         };
 
         // Bouton principal : Fermer
-        dlg.AddCommandLink(TaskDialogCommandLinkId.CommandLink1, "Fermer le rapport");
+        dlg.AddCommandLink(Autodesk.Revit.UI.TaskDialogCommandLinkId.CommandLink1, "Fermer le rapport");
         // Bouton secondaire : Copier dans le presse-papiers
-        dlg.AddCommandLink(TaskDialogCommandLinkId.CommandLink2, "Copier le rapport dans le presse-papiers");
+        dlg.AddCommandLink(Autodesk.Revit.UI.TaskDialogCommandLinkId.CommandLink2, "Copier le rapport dans le presse-papiers");
 
-        TaskDialogResult resultat = dlg.Show();
+        Autodesk.Revit.UI.TaskDialogResult resultat = dlg.Show();
 
         // Action sur le bouton "Copier"
-        if (resultat == TaskDialogResult.CommandLink2)
+        if (resultat == Autodesk.Revit.UI.TaskDialogResult.CommandLink2)
         {
             try
             {
-                System.Windows.Clipboard.SetText(rapport);
+                System.Windows.Forms.Clipboard.SetText(rapport);
             }
             catch
             {
