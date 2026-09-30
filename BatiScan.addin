@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  BatiScan.addin – Fichier de manifeste Revit 2027
+  Emplacement de déploiement :
+    %APPDATA%\Autodesk\Revit\Addins\2027\BatiScan.addin
+
+  Pour le déploiement machine (tous utilisateurs) :
+    %PROGRAMDATA%\Autodesk\Revit\Addins\2027\BatiScan.addin
+-->
+<RevitAddIns>
+
+  <!-- ── Application externe (charge le plugin au démarrage de Revit) ──── -->
+  <AddIn Type="Application">
+    <Name>BatiScan</Name>
+    <Assembly>BatiScan.dll</Assembly>
+    <FullClassName>BatiScan.Application</FullClassName>
+    <!--
+      Générez votre propre GUID avec : [System.Guid]::NewGuid() dans PowerShell
+      ou via Visual Studio → Outils → Créer un GUID.
+    -->
+    <ClientId>A1B2C3D4-E5F6-7890-ABCD-EF1234567890</ClientId>
+    <VendorId>BATISCAN</VendorId>
+    <VendorDescription>BatiScan – Lecture de nuage de points Revit 2027</VendorDescription>
+  </AddIn>
+
+</RevitAddIns>

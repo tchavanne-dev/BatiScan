@@ -1,0 +1,72 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- ──────────────────────────────────────────────
+         BatiScan – Plugin Revit 2027 (lecture nuage de points)
+         Cible : .NET 10 / Windows (Revit 2027 exige Windows)
+    ────────────────────────────────────────────── -->
+    <AssemblyName>BatiScan</AssemblyName>
+    <RootNamespace>BatiScan</RootNamespace>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+
+    <!-- Produit une DLL, pas un exe -->
+    <OutputType>Library</OutputType>
+
+    <!-- Répertoire de sortie vers le dossier Addins Revit local (optionnel) -->
+    <!-- <OutputPath>$(APPDATA)\Autodesk\Revit\Addins\2027\</OutputPath> -->
+
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Company>BatiScan</Company>
+    <Product>BatiScan – Lecture de nuage de points Revit 2027</Product>
+    <Copyright>Copyright © 2026 BatiScan</Copyright>
+    <Description>Plugin Revit 2027 : inventaire et analyse des nuages de points liés.</Description>
+  </PropertyGroup>
+
+  <!-- ──────────────────────────────────────────────
+       Références API Revit 2027 via NuGet Autodesk
+       Le package Autodesk.Revit.Api.* publie les
+       assemblies officielles pour chaque version.
+  ────────────────────────────────────────────── -->
+  <ItemGroup>
+    <!-- RevitAPI.dll – couche modèle/données -->
+    <PackageReference Include="Autodesk.Revit.RevitAPI" Version="2027.*" />
+    <!-- RevitAPIUI.dll – couche interface (ruban, dialogues) -->
+    <PackageReference Include="Autodesk.Revit.RevitAPIUI" Version="2027.*" />
+  </ItemGroup>
+
+  <!-- ──────────────────────────────────────────────
+       ALTERNATIVE : référence locale si les packages
+       NuGet ne sont pas encore disponibles pour 2027.
+       Décommentez et ajustez le chemin si nécessaire.
+  ────────────────────────────────────────────── -->
+  <!--
+  <ItemGroup>
+    <Reference Include="RevitAPI">
+      <HintPath>C:\Program Files\Autodesk\Revit 2027\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI">
+      <HintPath>C:\Program Files\Autodesk\Revit 2027\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  -->
+
+  <!-- Exclure les DLLs Revit de la sortie (elles sont chargées par l'hôte) -->
+  <ItemGroup>
+    <PackageReference Update="Autodesk.Revit.RevitAPI">
+      <ExcludeAssets>runtime</ExcludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Update="Autodesk.Revit.RevitAPIUI">
+      <ExcludeAssets>runtime</ExcludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

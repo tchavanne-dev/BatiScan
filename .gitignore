@@ -1,0 +1,88 @@
+## ──────────────────────────────────────────────
+## .gitignore – BatiScan (Visual Studio / .NET / Revit)
+## ──────────────────────────────────────────────
+
+# ── Dossiers de sortie .NET ──────────────────
+bin/
+obj/
+out/
+publish/
+
+# ── Visual Studio ────────────────────────────
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# ── Fichiers temporaires VS ──────────────────
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# ── NuGet ────────────────────────────────────
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ── Fichiers de test / couverture ────────────
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# ── Revit spécifique ─────────────────────────
+# Fichiers de sauvegarde Revit
+*.0001.rvt
+*.0002.rvt
+*_backup/
+# Fichiers journaux Revit
+*.journal
+# Fichiers verrou
+*.lock
+
+# ── Secrets / configuration locale ───────────
+*.env
+*.env.local
+appsettings.Local.json
+secrets.json
+
+# ── OS ───────────────────────────────────────
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS (si travail en équipe cross-platform)
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ── JetBrains Rider ──────────────────────────
+.idea/
+*.sln.iml
+
+# ── ReSharper ────────────────────────────────
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# ── Fichier .addin généré localement ─────────
+# (commitez le template, pas la copie locale déployée)
+# BatiScan.addin  <-- décommentez si vous ne voulez pas le versionner
