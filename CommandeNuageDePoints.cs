@@ -208,6 +208,7 @@ public class CommandeNuageDePoints : IExternalCommand
         }
         catch (Autodesk.Revit.Exceptions.ApplicationException)
         {
+            // Référence externe illisible : on se rabat sur le nom du type.
         }
 
         string? nomType = doc.GetElement(typeId)?.Name;
