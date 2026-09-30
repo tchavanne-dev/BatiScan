@@ -27,24 +27,6 @@
     <Description>Plugin Revit 2027 : inventaire et analyse des nuages de points liés.</Description>
   </PropertyGroup>
 
-  <!-- ──────────────────────────────────────────────
-       Références API Revit 2027 via NuGet Autodesk
-       Le package Autodesk.Revit.Api.* publie les
-       assemblies officielles pour chaque version.
-  ────────────────────────────────────────────── -->
-  <ItemGroup>
-    <!-- RevitAPI.dll – couche modèle/données -->
-    <PackageReference Include="Autodesk.Revit.RevitAPI" Version="2027.*" />
-    <!-- RevitAPIUI.dll – couche interface (ruban, dialogues) -->
-    <PackageReference Include="Autodesk.Revit.RevitAPIUI" Version="2027.*" />
-  </ItemGroup>
-
-  <!-- ──────────────────────────────────────────────
-       ALTERNATIVE : référence locale si les packages
-       NuGet ne sont pas encore disponibles pour 2027.
-       Décommentez et ajustez le chemin si nécessaire.
-  ────────────────────────────────────────────── -->
-  <!--
   <ItemGroup>
     <Reference Include="RevitAPI">
       <HintPath>C:\Program Files\Autodesk\Revit 2027\RevitAPI.dll</HintPath>
@@ -54,19 +36,6 @@
       <HintPath>C:\Program Files\Autodesk\Revit 2027\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
-  </ItemGroup>
-  -->
-
-  <!-- Exclure les DLLs Revit de la sortie (elles sont chargées par l'hôte) -->
-  <ItemGroup>
-    <PackageReference Update="Autodesk.Revit.RevitAPI">
-      <ExcludeAssets>runtime</ExcludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Update="Autodesk.Revit.RevitAPIUI">
-      <ExcludeAssets>runtime</ExcludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
   </ItemGroup>
 
 </Project>
