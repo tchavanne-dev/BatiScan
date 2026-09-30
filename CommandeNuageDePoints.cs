@@ -4,6 +4,12 @@ using Autodesk.Revit.DB.PointClouds;
 using Autodesk.Revit.UI;
 using System.Text;
 
+// ── Alias pour lever l'ambiguïté entre System.Windows.Forms.TaskDialog
+//    (importé par UseWindowsForms=true) et Autodesk.Revit.UI.TaskDialog ──
+using TaskDialog              = Autodesk.Revit.UI.TaskDialog;
+using TaskDialogResult        = Autodesk.Revit.UI.TaskDialogResult;
+using TaskDialogCommandLinkId = Autodesk.Revit.UI.TaskDialogCommandLinkId;
+
 namespace BatiScan;
 
 /// <summary>
@@ -140,11 +146,23 @@ public class CommandeNuageDePoints : IExternalCommand
         sb.AppendLine($"  Nom          : {nom}");
 
         // ── Chemin du fichier source ──────────────────────────────────────────
-        // PointCloudType contient le chemin physique vers le fichier RCP/PCG/E57
+        // BuiltInParameter.POINT_CLOUD_FILE_PATH n'existe pas dans l'API Revit.
+        // On cherche le chemin en interrogeant les paramètres du PointCloudType par nom.
         PointCloudType? type = doc.GetElement(nuage.GetTypeId()) as PointCloudType;
-        string cheminFichier = type?.get_Parameter(BuiltInParameter.POINT_CLOUD_FILE_PATH)
-                                    ?.AsString()
-                               ?? "<chemin non disponible>";
+        string cheminFichier = "<chemin non disponible>";
+        if (type != null)
+        {
+            // Revit 2022+ : le paramètre "File Path" / "Chemin du fichier" est accessible par nom
+            Parameter? paramChemin = type.LookupParameter("File Path")
+                                  ?? type.LookupParameter("Chemin du fichier")
+                                  ?? type.LookupParameter("Cloud File Path");
+            if (paramChemin?.HasValue == true)
+                cheminFichier = paramChemin.AsString() ?? type.Name;
+            else
+                // Fallback : le nom du type Revit contient généralement le nom de fichier
+                cheminFichier = $"<voir type : {type.Name}>";
+        }
+
         sb.AppendLine($"  Fichier      : {cheminFichier}");
 
         // ── Unités du document hôte ───────────────────────────────────────────
@@ -246,7 +264,7 @@ public class CommandeNuageDePoints : IExternalCommand
         {
             try
             {
-                System.Windows.Clipboard.SetText(rapport);
+                System.Windows.Forms.Clipboard.SetText(rapport);
             }
             catch
             {
