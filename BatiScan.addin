@@ -18,7 +18,7 @@
       Générez votre propre GUID avec : [System.Guid]::NewGuid() dans PowerShell
       ou via Visual Studio → Outils → Créer un GUID.
     -->
-    <ClientId>A1B2C3D4-E5F6-7890-ABCD-EF1234567890</ClientId>
+    <ClientId>27a4d785-d2fd-4f29-8bd5-a59592146ab6</ClientId>
     <VendorId>BATISCAN</VendorId>
     <VendorDescription>BatiScan – Lecture de nuage de points Revit 2027</VendorDescription>
   </AddIn>
