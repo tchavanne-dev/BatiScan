@@ -7,7 +7,7 @@ using BatiScan.Core.Journal;
 using BatiScan.Core.Moteur;
 using BatiScan.Core.Parametres;
 using BatiScan.Interface;
-using TaskDialog = Autodesk.Revit.UI.TaskDialog;
+using TaskDialog = BatiScan.Interface.BoiteDialogue;  // dialogues WPF du design system
 
 namespace BatiScan.Infrastructure;
 
@@ -179,7 +179,7 @@ public sealed class Contexte
         ReponseMoteur rep;
         try
         {
-            rep = FenetreProgression.Executer($"BatiScan – {operation}", (p, ct) =>
+            rep = FenetreProgression.Executer($"BatiScan – Analyse du nuage : {operation}", (p, ct) =>
             {
                 p.Report((0.02, $"{pts.Count:N0} points extraits – lancement du moteur"));
                 return Moteur.Executer(req, pts, delai, p, ct);

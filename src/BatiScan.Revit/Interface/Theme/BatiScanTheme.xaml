@@ -1,0 +1,559 @@
+<!--
+  BatiScan – Design system WPF (une seule source de vérité pour toutes les fenêtres du plugin).
+  Architecture en trois couches :
+    1. Primitives  : valeurs brutes (Couleur.*, Rayon.*, Espace.*).
+    2. Sémantiques : intention (Pinceau.Fond, Pinceau.Texte, Pinceau.Accent…).
+    3. Composants  : styles nommés ou implicites (Bouton.*, DataGrid, ProgressBar…).
+  Règles : aucun hexadécimal dans le code C# ; les fenêtres ne référencent que les
+  ressources sémantiques et les styles. Palette neutre froide, un seul accent bleu,
+  couleurs d'état réservées au sens (succès, attention, erreur).
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+  <!-- ══ 1. PRIMITIVES ═══════════════════════════════════════════════════════ -->
+
+  <!-- Neutres (gris froids, légèrement bleutés) -->
+  <Color x:Key="Couleur.Neutre0">#FFFFFF</Color>
+  <Color x:Key="Couleur.Neutre25">#FAFBFC</Color>
+  <Color x:Key="Couleur.Neutre50">#F3F5F8</Color>
+  <Color x:Key="Couleur.Neutre100">#E9ECF1</Color>
+  <Color x:Key="Couleur.Neutre200">#DCE1E8</Color>
+  <Color x:Key="Couleur.Neutre300">#C3CAD4</Color>
+  <Color x:Key="Couleur.Neutre500">#677180</Color>
+  <Color x:Key="Couleur.Neutre700">#38404B</Color>
+  <Color x:Key="Couleur.Neutre900">#151A21</Color>
+
+  <!-- Accent -->
+  <Color x:Key="Couleur.Bleu50">#EDF3FE</Color>
+  <Color x:Key="Couleur.Bleu100">#D9E6FD</Color>
+  <Color x:Key="Couleur.Bleu500">#1F6FEB</Color>
+  <Color x:Key="Couleur.Bleu600">#1A60D0</Color>
+  <Color x:Key="Couleur.Bleu700">#1650AE</Color>
+
+  <!-- États -->
+  <Color x:Key="Couleur.Vert500">#1E8E5A</Color>
+  <Color x:Key="Couleur.Vert50">#E9F6EF</Color>
+  <Color x:Key="Couleur.Ambre500">#B7701A</Color>
+  <Color x:Key="Couleur.Ambre50">#FCF3E6</Color>
+  <Color x:Key="Couleur.Rouge500">#C93C37</Color>
+  <Color x:Key="Couleur.Rouge50">#FCECEB</Color>
+  <Color x:Key="Couleur.Ombre">#0B1220</Color>
+
+  <!-- Teintes des panneaux du ruban (icônes) : une famille par panneau -->
+  <Color x:Key="Couleur.Ruban.Diagnostic">#4A5463</Color>
+  <Color x:Key="Couleur.Ruban.Calage">#1F6FEB</Color>
+  <Color x:Key="Couleur.Ruban.Coupes">#0E8A8C</Color>
+  <Color x:Key="Couleur.Ruban.Modelisation">#5A4FD3</Color>
+  <Color x:Key="Couleur.Ruban.Glyphe">#FFFFFF</Color>
+
+  <!-- Rayons et espacements (grille de 4) -->
+  <CornerRadius x:Key="Rayon.Petit">6</CornerRadius>
+  <CornerRadius x:Key="Rayon.Moyen">10</CornerRadius>
+  <CornerRadius x:Key="Rayon.Plein">999</CornerRadius>
+  <Thickness x:Key="Espace.Fenetre">28,24,28,0</Thickness>
+  <Thickness x:Key="Espace.Pied">28,14,28,14</Thickness>
+  <Thickness x:Key="Espace.Carte">16</Thickness>
+  <Thickness x:Key="Espace.Bouton">16,0,16,0</Thickness>
+
+  <!-- Typographie -->
+  <FontFamily x:Key="Police.Interface">Segoe UI Variable Text, Segoe UI</FontFamily>
+  <FontFamily x:Key="Police.Titre">Segoe UI Variable Display, Segoe UI</FontFamily>
+  <FontFamily x:Key="Police.Mono">Cascadia Mono, Consolas</FontFamily>
+  <sys:Double x:Key="Taille.Titre">20</sys:Double>
+  <sys:Double x:Key="Taille.Corps">13</sys:Double>
+  <sys:Double x:Key="Taille.Legende">11.5</sys:Double>
+
+  <!-- ══ 2. SÉMANTIQUES ══════════════════════════════════════════════════════ -->
+
+  <SolidColorBrush x:Key="Pinceau.Fond" Color="{StaticResource Couleur.Neutre50}" />
+  <SolidColorBrush x:Key="Pinceau.Surface" Color="{StaticResource Couleur.Neutre0}" />
+  <SolidColorBrush x:Key="Pinceau.SurfaceDouce" Color="{StaticResource Couleur.Neutre25}" />
+  <SolidColorBrush x:Key="Pinceau.Survol" Color="{StaticResource Couleur.Neutre100}" />
+  <SolidColorBrush x:Key="Pinceau.Bordure" Color="{StaticResource Couleur.Neutre200}" />
+  <SolidColorBrush x:Key="Pinceau.BordureForte" Color="{StaticResource Couleur.Neutre300}" />
+  <SolidColorBrush x:Key="Pinceau.Texte" Color="{StaticResource Couleur.Neutre900}" />
+  <SolidColorBrush x:Key="Pinceau.TexteSecondaire" Color="{StaticResource Couleur.Neutre500}" />
+  <SolidColorBrush x:Key="Pinceau.TexteFort" Color="{StaticResource Couleur.Neutre700}" />
+  <SolidColorBrush x:Key="Pinceau.TexteSurAccent" Color="{StaticResource Couleur.Neutre0}" />
+  <SolidColorBrush x:Key="Pinceau.Accent" Color="{StaticResource Couleur.Bleu500}" />
+  <SolidColorBrush x:Key="Pinceau.AccentSurvol" Color="{StaticResource Couleur.Bleu600}" />
+  <SolidColorBrush x:Key="Pinceau.AccentPresse" Color="{StaticResource Couleur.Bleu700}" />
+  <SolidColorBrush x:Key="Pinceau.AccentTeinte" Color="{StaticResource Couleur.Bleu50}" />
+  <SolidColorBrush x:Key="Pinceau.AccentTeinteForte" Color="{StaticResource Couleur.Bleu100}" />
+  <SolidColorBrush x:Key="Pinceau.Succes" Color="{StaticResource Couleur.Vert500}" />
+  <SolidColorBrush x:Key="Pinceau.SuccesTeinte" Color="{StaticResource Couleur.Vert50}" />
+  <SolidColorBrush x:Key="Pinceau.Attention" Color="{StaticResource Couleur.Ambre500}" />
+  <SolidColorBrush x:Key="Pinceau.AttentionTeinte" Color="{StaticResource Couleur.Ambre50}" />
+  <SolidColorBrush x:Key="Pinceau.Erreur" Color="{StaticResource Couleur.Rouge500}" />
+  <SolidColorBrush x:Key="Pinceau.ErreurTeinte" Color="{StaticResource Couleur.Rouge50}" />
+
+  <!-- Profondeur : ombres très douces, plus profondes pour les grandes surfaces -->
+  <DropShadowEffect x:Key="Ombre.Carte" Color="{StaticResource Couleur.Ombre}" BlurRadius="18" ShadowDepth="2" Direction="270" Opacity="0.07" />
+  <DropShadowEffect x:Key="Ombre.Survol" Color="{StaticResource Couleur.Ombre}" BlurRadius="14" ShadowDepth="2" Direction="270" Opacity="0.10" />
+
+  <!-- ══ 3. TEXTE ════════════════════════════════════════════════════════════ -->
+
+  <Style x:Key="Texte.Titre" TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="{StaticResource Police.Titre}" />
+    <Setter Property="FontSize" Value="{StaticResource Taille.Titre}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{StaticResource Pinceau.Texte}" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+  </Style>
+  <Style x:Key="Texte.Instruction" TargetType="TextBlock">
+    <Setter Property="FontSize" Value="15" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{StaticResource Pinceau.Texte}" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+  </Style>
+  <Style x:Key="Texte.Corps" TargetType="TextBlock">
+    <Setter Property="FontSize" Value="{StaticResource Taille.Corps}" />
+    <Setter Property="Foreground" Value="{StaticResource Pinceau.TexteFort}" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+    <Setter Property="LineHeight" Value="19" />
+  </Style>
+  <Style x:Key="Texte.Secondaire" TargetType="TextBlock" BasedOn="{StaticResource Texte.Corps}">
+    <Setter Property="Foreground" Value="{StaticResource Pinceau.TexteSecondaire}" />
+  </Style>
+  <Style x:Key="Texte.Legende" TargetType="TextBlock">
+    <Setter Property="FontSize" Value="{StaticResource Taille.Legende}" />
+    <Setter Property="Foreground" Value="{StaticResource Pinceau.TexteSecondaire}" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+  </Style>
+  <Style x:Key="Texte.Surtitre" TargetType="TextBlock">
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{StaticResource Pinceau.Accent}" />
+  </Style>
+
+  <!-- ══ 4. FENÊTRE ET SURFACES ══════════════════════════════════════════════ -->
+
+  <Style x:Key="Fenetre.BatiScan" TargetType="Window">
+    <Setter Property="Background" Value="{StaticResource Pinceau.Fond}" />
+    <Setter Property="FontFamily" Value="{StaticResource Police.Interface}" />
+    <Setter Property="FontSize" Value="{StaticResource Taille.Corps}" />
+    <Setter Property="Foreground" Value="{StaticResource Pinceau.Texte}" />
+    <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+    <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
+    <Setter Property="UseLayoutRounding" Value="True" />
+    <Setter Property="SnapsToDevicePixels" Value="True" />
+  </Style>
+
+  <Style x:Key="Surface.Carte" TargetType="Border">
+    <Setter Property="Background" Value="{StaticResource Pinceau.Surface}" />
+    <Setter Property="BorderBrush" Value="{StaticResource Pinceau.Bordure}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{StaticResource Rayon.Moyen}" />
+    <Setter Property="Effect" Value="{StaticResource Ombre.Carte}" />
+  </Style>
+
+  <Style x:Key="Surface.Pied" TargetType="Border">
+    <Setter Property="Background" Value="{StaticResource Pinceau.Surface}" />
+    <Setter Property="BorderBrush" Value="{StaticResource Pinceau.Bordure}" />
+    <Setter Property="BorderThickness" Value="0,1,0,0" />
+    <Setter Property="Padding" Value="{StaticResource Espace.Pied}" />
+  </Style>
+
+  <Style x:Key="Surface.Note" TargetType="Border">
+    <Setter Property="Background" Value="{StaticResource Pinceau.SurfaceDouce}" />
+    <Setter Property="BorderBrush" Value="{StaticResource Pinceau.Bordure}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{StaticResource Rayon.Petit}" />
+    <Setter Property="Padding" Value="12,10" />
+  </Style>
+
+  <Style x:Key="Pastille" TargetType="Border">
+    <Setter Property="CornerRadius" Value="{StaticResource Rayon.Plein}" />
+    <Setter Property="Padding" Value="8,2" />
+    <Setter Property="Background" Value="{StaticResource Pinceau.AccentTeinte}" />
+  </Style>
+
+  <!-- ══ 5. BOUTONS ══════════════════════════════════════════════════════════ -->
+  <!-- Retour immédiat à l'appui : échelle 0,98 en 100 ms, relâchement 160 ms (ease-out). -->
+
+  <Style x:Key="Bouton.Base" TargetType="Button">
+    <Setter Property="MinHeight" Value="34" />
+    <Setter Property="MinWidth" Value="88" />
+    <Setter Property="Padding" Value="{StaticResource Espace.Bouton}" />
+    <Setter Property="FontSize" Value="{StaticResource Taille.Corps}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Margin" Value="8,0,0,0" />
+    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <!-- Transformation instanciée par gabarit (non gelée) : animable. -->
+          <Grid RenderTransformOrigin="0.5,0.5">
+            <Grid.RenderTransform>
+              <ScaleTransform x:Name="Echelle" ScaleX="1" ScaleY="1" />
+            </Grid.RenderTransform>
+            <Border x:Name="Anneau" CornerRadius="9" Margin="-3" BorderThickness="2"
+                    BorderBrush="{StaticResource Pinceau.AccentTeinteForte}" Visibility="Collapsed" />
+            <Border x:Name="Fond" CornerRadius="{StaticResource Rayon.Petit}"
+                    Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+              <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="Center" RecognizesAccessKey="True" />
+            </Border>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+              <Setter TargetName="Anneau" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Trigger.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="Echelle" Storyboard.TargetProperty="ScaleX" To="0.98" Duration="0:0:0.10">
+                      <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                    <DoubleAnimation Storyboard.TargetName="Echelle" Storyboard.TargetProperty="ScaleY" To="0.98" Duration="0:0:0.10">
+                      <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.EnterActions>
+              <Trigger.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="Echelle" Storyboard.TargetProperty="ScaleX" To="1" Duration="0:0:0.16">
+                      <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                    <DoubleAnimation Storyboard.TargetName="Echelle" Storyboard.TargetProperty="ScaleY" To="1" Duration="0:0:0.16">
+                      <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.ExitActions>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Opacity" Value="0.45" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="Bouton.Primaire" TargetType="Button" BasedOn="{StaticResource Bouton.Base}">
+    <Setter Property="Background" Value="{StaticResource Pinceau.Accent}" />
+    <Setter Property="Foreground" Value="{StaticResource Pinceau.TexteSurAccent}" />
+    <Setter Property="BorderBrush" Value="{StaticResource Pinceau.Accent}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Background" Value="{StaticResource Pinceau.AccentSurvol}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Pinceau.AccentSurvol}" />
+      </Trigger>
+      <Trigger Property="IsPressed" Value="True">
+        <Setter Property="Background" Value="{StaticResource Pinceau.AccentPresse}" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style x:Key="Bouton.Secondaire" TargetType="Button" BasedOn="{StaticResource Bouton.Base}">
+    <Setter Property="Background" Value="{StaticResource Pinceau.Surface}" />
+    <Setter Property="Foreground" Value="{StaticResource Pinceau.Texte}" />
+    <Setter Property="BorderBrush" Value="{StaticResource Pinceau.BordureForte}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="FontWeight" Value="Normal" />
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Background" Value="{StaticResource Pinceau.Survol}" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style x:Key="Bouton.Discret" TargetType="Button" BasedOn="{StaticResource Bouton.Base}">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{StaticResource Pinceau.Accent}" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="MinWidth" Value="0" />
+    <Setter Property="Padding" Value="10,0" />
+    <Setter Property="Margin" Value="0,0,4,0" />
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Background" Value="{StaticResource Pinceau.AccentTeinte}" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <!-- Choix d'action (remplace les liens de commande) : carte cliquable, titre + description -->
+  <Style x:Key="Bouton.Carte" TargetType="Button" BasedOn="{StaticResource Bouton.Base}">
+    <Setter Property="Background" Value="{StaticResource Pinceau.Surface}" />
+    <Setter Property="Foreground" Value="{StaticResource Pinceau.Texte}" />
+    <Setter Property="BorderBrush" Value="{StaticResource Pinceau.Bordure}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="FontWeight" Value="Normal" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="Padding" Value="14,11" />
+    <Setter Property="Margin" Value="0,0,0,8" />
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="BorderBrush" Value="{StaticResource Pinceau.Accent}" />
+        <Setter Property="Background" Value="{StaticResource Pinceau.AccentTeinte}" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <!-- ══ 6. CHAMPS ═══════════════════════════════════════════════════════════ -->
+
+  <Style TargetType="TextBox">
+    <Setter Property="MinHeight" Value="34" />
+    <Setter Property="Padding" Value="9,6" />
+    <Setter Property="Background" Value="{StaticResource Pinceau.Surface}" />
+    <Setter Property="Foreground" Value="{StaticResource Pinceau.Texte}" />
+    <Setter Property="BorderBrush" Value="{StaticResource Pinceau.BordureForte}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="TextBox">
+          <Border x:Name="Cadre" CornerRadius="{StaticResource Rayon.Petit}" Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" Focusable="False" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+              <Setter TargetName="Cadre" Property="BorderBrush" Value="{StaticResource Pinceau.Accent}" />
+            </Trigger>
+            <Trigger Property="IsReadOnly" Value="True">
+              <Setter TargetName="Cadre" Property="Background" Value="{StaticResource Pinceau.SurfaceDouce}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Champ d'édition dans une cellule de grille : compact, sans cadre propre -->
+  <Style x:Key="Champ.Cellule" TargetType="TextBox">
+    <Setter Property="Padding" Value="2,0" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+
+  <!-- Texte long en lecture (rapports, diagnostic) -->
+  <Style x:Key="Champ.Lecture" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+    <Setter Property="IsReadOnly" Value="True" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+    <Setter Property="VerticalContentAlignment" Value="Top" />
+    <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+    <Setter Property="FontFamily" Value="{StaticResource Police.Mono}" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="Padding" Value="12,10" />
+    <Setter Property="Foreground" Value="{StaticResource Pinceau.TexteFort}" />
+  </Style>
+
+  <Style TargetType="ComboBox">
+    <Setter Property="MinHeight" Value="34" />
+    <Setter Property="Foreground" Value="{StaticResource Pinceau.Texte}" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ComboBox">
+          <Grid>
+            <ToggleButton Focusable="False" ClickMode="Press"
+                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+              <ToggleButton.Template>
+                <ControlTemplate TargetType="ToggleButton">
+                  <Border x:Name="Cadre" CornerRadius="{StaticResource Rayon.Petit}" Background="{StaticResource Pinceau.Surface}"
+                          BorderBrush="{StaticResource Pinceau.BordureForte}" BorderThickness="1">
+                    <Path HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,1,12,0" Data="M0,0 L4,4 L8,0"
+                          Stroke="{StaticResource Pinceau.TexteSecondaire}" StrokeThickness="1.6"
+                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
+                  </Border>
+                  <ControlTemplate.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                      <Setter TargetName="Cadre" Property="BorderBrush" Value="{StaticResource Pinceau.TexteSecondaire}" />
+                    </Trigger>
+                    <Trigger Property="IsChecked" Value="True">
+                      <Setter TargetName="Cadre" Property="BorderBrush" Value="{StaticResource Pinceau.Accent}" />
+                    </Trigger>
+                  </ControlTemplate.Triggers>
+                </ControlTemplate>
+              </ToggleButton.Template>
+            </ToggleButton>
+            <ContentPresenter IsHitTestVisible="False" Margin="11,0,32,0" VerticalAlignment="Center" HorizontalAlignment="Left"
+                              Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" />
+            <Popup x:Name="PART_Popup" Placement="Bottom" VerticalOffset="4" AllowsTransparency="True" Focusable="False"
+                   PopupAnimation="Fade" IsOpen="{TemplateBinding IsDropDownOpen}">
+              <Border Margin="0,0,10,12" Padding="4" CornerRadius="8" BorderThickness="1"
+                      Background="{StaticResource Pinceau.Surface}" BorderBrush="{StaticResource Pinceau.Bordure}"
+                      Effect="{StaticResource Ombre.Survol}" MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                      MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                  <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                </ScrollViewer>
+              </Border>
+            </Popup>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Opacity" Value="0.5" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style TargetType="ComboBoxItem">
+    <Setter Property="Padding" Value="9,7" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ComboBoxItem">
+          <Border x:Name="Fond" CornerRadius="5" Padding="{TemplateBinding Padding}" Background="Transparent">
+            <ContentPresenter />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsHighlighted" Value="True">
+              <Setter TargetName="Fond" Property="Background" Value="{StaticResource Pinceau.Survol}" />
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+              <Setter TargetName="Fond" Property="Background" Value="{StaticResource Pinceau.AccentTeinte}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style TargetType="CheckBox">
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="HorizontalAlignment" Value="Center" />
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+
+  <!-- ══ 7. LISTES ═══════════════════════════════════════════════════════════ -->
+
+  <Style TargetType="ListBox">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+  </Style>
+
+  <Style TargetType="ListBoxItem">
+    <Setter Property="Padding" Value="12,9" />
+    <Setter Property="Margin" Value="0,0,0,4" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ListBoxItem">
+          <Border x:Name="Fond" CornerRadius="{StaticResource Rayon.Petit}" Background="{StaticResource Pinceau.Surface}"
+                  BorderBrush="{StaticResource Pinceau.Bordure}" BorderThickness="1" Padding="{TemplateBinding Padding}">
+            <ContentPresenter />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Fond" Property="BorderBrush" Value="{StaticResource Pinceau.BordureForte}" />
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+              <Setter TargetName="Fond" Property="Background" Value="{StaticResource Pinceau.AccentTeinte}" />
+              <Setter TargetName="Fond" Property="BorderBrush" Value="{StaticResource Pinceau.Accent}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- ══ 8. GRILLE DE VALIDATION ═════════════════════════════════════════════ -->
+
+  <Style TargetType="DataGrid">
+    <Setter Property="Background" Value="{StaticResource Pinceau.Surface}" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="RowBackground" Value="{StaticResource Pinceau.Surface}" />
+    <Setter Property="AlternatingRowBackground" Value="{StaticResource Pinceau.SurfaceDouce}" />
+    <Setter Property="GridLinesVisibility" Value="Horizontal" />
+    <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource Pinceau.Survol}" />
+    <Setter Property="RowHeight" Value="34" />
+    <Setter Property="ColumnHeaderHeight" Value="36" />
+    <Setter Property="HeadersVisibility" Value="Column" />
+    <Setter Property="CanUserResizeRows" Value="False" />
+    <Setter Property="SelectionUnit" Value="FullRow" />
+    <Setter Property="Foreground" Value="{StaticResource Pinceau.Texte}" />
+  </Style>
+
+  <Style TargetType="DataGridColumnHeader">
+    <Setter Property="Background" Value="{StaticResource Pinceau.SurfaceDouce}" />
+    <Setter Property="Foreground" Value="{StaticResource Pinceau.TexteSecondaire}" />
+    <Setter Property="FontSize" Value="{StaticResource Taille.Legende}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Padding" Value="12,0" />
+    <Setter Property="BorderBrush" Value="{StaticResource Pinceau.Bordure}" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+    <Setter Property="HorizontalContentAlignment" Value="Left" />
+  </Style>
+
+  <Style TargetType="DataGridCell">
+    <Setter Property="Padding" Value="12,0" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="DataGridCell">
+          <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+            <ContentPresenter VerticalAlignment="Center" />
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+    <Style.Triggers>
+      <Trigger Property="IsSelected" Value="True">
+        <Setter Property="Background" Value="{StaticResource Pinceau.AccentTeinte}" />
+        <Setter Property="Foreground" Value="{StaticResource Pinceau.Texte}" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style TargetType="DataGridRow">
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Background" Value="{StaticResource Pinceau.Survol}" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <!-- ══ 9. PROGRESSION ══════════════════════════════════════════════════════ -->
+
+  <Style TargetType="ProgressBar">
+    <Setter Property="Height" Value="6" />
+    <Setter Property="Foreground" Value="{StaticResource Pinceau.Accent}" />
+    <Setter Property="Background" Value="{StaticResource Pinceau.Survol}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ProgressBar">
+          <Grid>
+            <Border x:Name="PART_Track" CornerRadius="3" Background="{TemplateBinding Background}" />
+            <Border x:Name="PART_Indicator" CornerRadius="3" Background="{TemplateBinding Foreground}" HorizontalAlignment="Left" />
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- ══ 10. DÉTAILS DÉPLIABLES ══════════════════════════════════════════════ -->
+
+  <Style TargetType="Expander">
+    <Setter Property="Foreground" Value="{StaticResource Pinceau.TexteSecondaire}" />
+    <Setter Property="FontSize" Value="{StaticResource Taille.Legende}" />
+  </Style>
+
+  <Style TargetType="ToolTip">
+    <Setter Property="Background" Value="{StaticResource Pinceau.Texte}" />
+    <Setter Property="Foreground" Value="{StaticResource Pinceau.TexteSurAccent}" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="8,5" />
+  </Style>
+
+</ResourceDictionary>

@@ -4,9 +4,9 @@ using Autodesk.Revit.DB.PointClouds;
 using Autodesk.Revit.UI;
 using System.Text;
 
-// ── Alias pour lever l'ambiguïté entre System.Windows.Forms.TaskDialog
-//    (importé par UseWindowsForms=true) et Autodesk.Revit.UI.TaskDialog ──
-using TaskDialog              = Autodesk.Revit.UI.TaskDialog;
+// ── Alias : les dialogues BatiScan utilisent la boîte WPF du design system,
+//    les énumérations de résultat restent celles de l'API Revit ──
+using TaskDialog              = BatiScan.Interface.BoiteDialogue;  // dialogue WPF du design system
 using TaskDialogResult        = Autodesk.Revit.UI.TaskDialogResult;
 using TaskDialogCommandLinkId = Autodesk.Revit.UI.TaskDialogCommandLinkId;
 
@@ -72,7 +72,7 @@ public class CommandeNuageDePoints : IExternalCommand
             // ── 3. Construction du rapport ────────────────────────────────────
             string rapport = ConstruireRapport(doc, nuages);
 
-            // ── 4. Affichage dans un TaskDialog Revit ─────────────────────────
+            // ── 4. Affichage dans la boîte de dialogue BatiScan ─────────────────────────
             AfficherRapport(rapport, nuages.Count);
 
             return Result.Succeeded;
@@ -239,7 +239,7 @@ public class CommandeNuageDePoints : IExternalCommand
     }
 
     /// <summary>
-    /// Affiche le rapport dans un <see cref="TaskDialog"/> Revit multi-lignes.
+    /// Affiche le rapport dans une <see cref="TaskDialog"/> (boîte WPF BatiScan) multi-lignes.
     /// </summary>
     private static void AfficherRapport(string rapport, int nombreNuages)
     {

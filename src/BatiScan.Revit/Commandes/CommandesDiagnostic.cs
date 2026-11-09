@@ -6,7 +6,7 @@ using BatiScan.Core.Journal;
 using BatiScan.Core.Parametres;
 using BatiScan.Core.Scan;
 using BatiScan.Infrastructure;
-using TaskDialog = Autodesk.Revit.UI.TaskDialog;
+using TaskDialog = BatiScan.Interface.BoiteDialogue;  // dialogues WPF du design system
 
 namespace BatiScan.Commandes;
 
