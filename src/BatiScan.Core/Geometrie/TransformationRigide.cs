@@ -42,6 +42,21 @@ public sealed class TransformationRigide
         return new([m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9], m[10]], new Vecteur3(m[3], m[7], m[11]));
     }
 
+    /// <summary>
+    /// Reconstruit une transformation rigide à partir des images de l'origine et des points
+    /// (pas,0,0), (0,pas,0), (0,0,pas) (E02). Refuse une image non rigide (échelle ou cisaillement)
+    /// plutôt que de l'orthonormaliser silencieusement.
+    /// </summary>
+    public static TransformationRigide DepuisImagesDeSonde(Vecteur3 o, Vecteur3 ix, Vecteur3 iy, Vecteur3 iz, double pas, double tolerance = 1e-6)
+    {
+        Vecteur3 bx = (ix - o) / pas, by = (iy - o) / pas, bz = (iz - o) / pas;
+        bool rigide = Math.Abs(bx.Norme - 1) < tolerance && Math.Abs(by.Norme - 1) < tolerance && Math.Abs(bz.Norme - 1) < tolerance
+                      && Math.Abs(bx.Scalaire(by)) < tolerance && Math.Abs(bx.Scalaire(bz)) < tolerance && Math.Abs(by.Scalaire(bz)) < tolerance
+                      && bx.Vectoriel(by).Scalaire(bz) > 0;
+        if (!rigide) throw new InvalidOperationException("Transformation sondée non rigide (échelle, cisaillement ou symétrie) : refusée.");
+        return new TransformationRigide([bx.X, by.X, bz.X, bx.Y, by.Y, bz.Y, bx.Z, by.Z, bz.Z], o);
+    }
+
     public double[] VersMatrice4x4() =>
     [
         _r[0], _r[1], _r[2], Translation.X,

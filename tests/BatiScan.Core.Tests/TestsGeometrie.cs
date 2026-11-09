@@ -31,6 +31,21 @@ public class TestsGeometrie
     }
 
     [Fact]
+    public void DepuisImagesDeSonde_ReconstruitInterneVersPartage_EtRefuseEchelle()
+    {
+        // Site typique : Nord géographique à 23°, coordonnées Lambert ~150 km, altitude 120 m.
+        var vraie = TransformationRigide.Translater(new Vecteur3(152_345.678, 167_890.123, 120.5))
+            .Apres(TransformationRigide.RotationZ(23.0 * Math.PI / 180, Vecteur3.Zero));
+        double pas = 30.48; // 100 pieds
+        var t = TransformationRigide.DepuisImagesDeSonde(vraie.Appliquer(Vecteur3.Zero), vraie.Appliquer(new(pas, 0, 0)),
+            vraie.Appliquer(new(0, pas, 0)), vraie.Appliquer(new(0, 0, pas)), pas);
+        foreach (var p in Carre) Assert.True(t.Appliquer(p).Distance(vraie.Appliquer(p)) <= 1e-4);
+        Assert.Equal(23.0, t.AngleEnPlanDeg(), 6);
+        Assert.Throws<InvalidOperationException>(() => TransformationRigide.DepuisImagesDeSonde(
+            Vecteur3.Zero, new(pas * 1.01, 0, 0), new(0, pas, 0), new(0, 0, pas), pas));
+    }
+
+    [Fact]
     public void Ajustement4Ddl_RetrouveRotationEtTranslation()
     {
         var vraie = TransformationRigide.RotationZ(23.0 * Math.PI / 180, Vecteur3.Zero)

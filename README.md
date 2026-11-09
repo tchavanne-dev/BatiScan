@@ -85,7 +85,7 @@ Valeurs par défaut dans `src/BatiScan.Core/Parametres/ParametresBatiScan.cs` (c
 
 Points non vérifiables hors Revit, contrôlés à l'exécution quand c'est possible :
 1. Repère des points retournés par `GetPoints` (modèle ou local) : détecté automatiquement et journalisé ; extraction refusée s'il est indéterminé.
-2. Sens de `ProjectLocation.GetTotalTransform` : déduit du point de base et du point de topographie ; calage refusé si non confirmé.
+2. Relation interne ↔ partagé : construite par `ProjectLocation.GetProjectPosition` (méthode documentée ; `GetTotalTransform` n'est pas utilisé, son sens n'étant pas documenté), vérifiée par `BasePoint.SharedPosition` ; calage refusé si non confirmé.
 3. Base d'élévation des niveaux (`Elevation` / `ProjectElevation`) : contrôlée après création, lot annulé si incohérent.
 4. Signe de l'angle des murs inclinés : vérifié par le centroïde du solide.
 5. Rotation 3D d'un nuage (compensation E22 inclinée) : peut être refusée par Revit ; le lot est alors annulé.

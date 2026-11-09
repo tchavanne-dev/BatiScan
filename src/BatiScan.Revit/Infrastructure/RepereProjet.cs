@@ -35,24 +35,40 @@ public sealed class RepereProjet
         ProjectPosition pos = loc.GetProjectPosition(XYZ.Zero);
         AngleNordGeographiqueDeg = ConversionRevit.VersDeg(pos.Angle);
 
-        // Sens de GetTotalTransform non documenté de façon univoque : on retient celui des deux
-        // sens (T ou T⁻¹) qui envoie Position → SharedPosition pour les DEUX points de référence.
-        Transform t = loc.GetTotalTransform();
+        // Interne → partagé construit avec la SEULE méthode documentée : GetProjectPosition(p) donne
+        // les coordonnées partagées de p (« Report Shared Coordinates »). GetTotalTransform n'est pas
+        // utilisé : la doc API 2027 ne précise pas son sens interne ↔ partagé (avis contradictoires
+        // sur le forum Autodesk). Les images de l'origine et de trois points d'axe donnent rotation et
+        // translation sans hypothèse sur le signe de ProjectPosition.Angle.
         TransformationRigide? retenu = null;
-        foreach (Transform cand in new[] { t, t.Inverse })
+        string statut;
+        try
         {
-            var c = ConversionRevit.VersM(cand);
-            if (c.Appliquer(PointTopoInterne).Distance(PointTopoPartage) < 1e-4
-                && c.Appliquer(PointBaseInterne).Distance(PointBasePartage) < 1e-4)
+            const double pas = 100.0; // pieds : sonde éloignée pour la précision numérique
+            Vecteur3 S(XYZ p)
             {
-                retenu = c;
-                break;
+                ProjectPosition pp = loc.GetProjectPosition(p);
+                return ConversionRevit.VersM(new XYZ(pp.EastWest, pp.NorthSouth, pp.Elevation));
             }
+            var candidat = TransformationRigide.DepuisImagesDeSonde(
+                S(XYZ.Zero), S(new XYZ(pas, 0, 0)), S(new XYZ(0, pas, 0)), S(new XYZ(0, 0, pas)), ConversionRevit.VersM(pas));
+            // Contrôle indépendant : BasePoint.SharedPosition est calculé par Revit, pas par BatiScan.
+            double ecartBase = candidat.Appliquer(PointBaseInterne).Distance(PointBasePartage);
+            double ecartTopo = candidat.Appliquer(PointTopoInterne).Distance(PointTopoPartage);
+            if (ecartBase < 1e-4 && ecartTopo < 1e-4)
+            {
+                retenu = candidat;
+                statut = "Confirmé : GetProjectPosition vérifié par le point de base du projet et le point de topographie.";
+            }
+            else
+                statut = $"NON CONFIRMÉ : GetProjectPosition et SharedPosition divergent (point de base {ecartBase * 1000:F2} mm, topographie {ecartTopo * 1000:F2} mm).";
+        }
+        catch (Exception e) when (e is InvalidOperationException or Autodesk.Revit.Exceptions.ApplicationException)
+        {
+            statut = "NON CONFIRMÉ : " + e.Message;
         }
         InterneVersPartage = retenu;
-        Statut = retenu is null
-            ? "NON CONFIRMÉ : la transformation du site ne relie pas les points de base à leurs coordonnées partagées."
-            : "Confirmé par le point de base du projet et le point de topographie.";
+        Statut = statut;
         CoordonneesEtablies = retenu is not null && !retenu.EstIdentite(1e-6, 1e-6);
     }
 
