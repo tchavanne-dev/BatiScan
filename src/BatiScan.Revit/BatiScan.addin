@@ -20,7 +20,7 @@
     -->
     <ClientId>27a4d785-d2fd-4f29-8bd5-a59592146ab6</ClientId>
     <VendorId>BATISCAN</VendorId>
-    <VendorDescription>BatiScan – Lecture de nuage de points Revit 2027</VendorDescription>
+    <VendorDescription>BatiScan – Scan-to-BIM Revit 2027 (calage, niveaux, murs, coupes, Snap)</VendorDescription>
   </AddIn>
 
 </RevitAddIns>

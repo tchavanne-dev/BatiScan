@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Bibliothèque de calcul C# SANS dépendance Revit : transformations, conversions,
+       contrats moteur, analyse de révisions de scan, Snap. Testable hors Revit. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>BatiScan.Core</RootNamespace>
+    <AssemblyName>BatiScan.Core</AssemblyName>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="BatiScan.Core.Tests" />
+  </ItemGroup>
+
+</Project>

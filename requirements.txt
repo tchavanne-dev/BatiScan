@@ -1,0 +1,9 @@
+# Moteur de calcul Python BatiScan (CPython externe, jamais chargé dans Revit)
+# Versions figées pour la reproductibilité des essais (cahier des charges : Maintenance).
+# Python 3.13. Pas de mise à jour sans relancer : python -m pytest engine/tests
+open3d==0.20.0
+numpy==2.5.4
+jsonschema==4.26.0
+
+# Tests du moteur
+pytest==8.4.2

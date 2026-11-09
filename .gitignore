@@ -86,3 +86,19 @@ _ReSharper*/
 # ── Fichier .addin généré localement ─────────
 # (commitez le template, pas la copie locale déployée)
 # BatiScan.addin  <-- décommentez si vous ne voulez pas le versionner
+
+# ── Python (moteur de calcul) ────────────────
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# ── Données de scan (privées, jamais versionnées) ──
+*.rcp
+*.rcs
+*.e57
+*.las
+*.laz
+*.pts
+*.ply
+*.pcd

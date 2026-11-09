@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://batiscan.local/contracts/requete/1.0.0",
+  "title": "BatiScan – requête C# → moteur Python",
+  "description": "Contrat 1.0.0. Toutes les longueurs sont en mètres, les angles en degrés. Les coordonnées sont exprimées dans le repère déclaré (repere.nom).",
+  "type": "object",
+  "required": ["contract_version", "id_requete", "operation", "unites", "repere", "source", "points", "parametres", "graine"],
+  "properties": {
+    "contract_version": { "const": "1.0.0" },
+    "id_requete": { "type": "string", "minLength": 1 },
+    "operation": {
+      "enum": ["niveaux", "murs", "coupes", "structure", "ecarts", "directions", "nettoyage"]
+    },
+    "unites": {
+      "type": "object",
+      "required": ["longueur", "angle"],
+      "properties": {
+        "longueur": { "const": "m" },
+        "angle": { "const": "deg" }
+      }
+    },
+    "repere": {
+      "type": "object",
+      "required": ["nom"],
+      "properties": {
+        "nom": { "enum": ["revit_interne_m", "source_m"] },
+        "description": { "type": "string" },
+        "transformation_vers_partage": {
+          "description": "Matrice 4×4 ligne par ligne (m), repère déclaré → coordonnées partagées. Information de traçabilité, jamais appliquée par le moteur.",
+          "type": "array", "items": { "type": "number" }, "minItems": 16, "maxItems": 16
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "required": ["id", "chemin", "empreinte"],
+      "properties": {
+        "id": { "type": "string" },
+        "chemin": { "type": "string" },
+        "empreinte": { "type": "string" },
+        "revision": { "type": "integer", "minimum": 0 },
+        "transformation_instance": {
+          "type": "array", "items": { "type": "number" }, "minItems": 16, "maxItems": 16
+        }
+      }
+    },
+    "points": {
+      "type": "object",
+      "required": ["chemin", "format"],
+      "properties": {
+        "chemin": { "type": "string", "description": "Chemin absolu ou relatif au fichier de requête." },
+        "format": { "enum": ["xyz_f32_le", "xyz_f64_le", "fichier_open3d"] },
+        "nombre": { "type": "integer", "minimum": 0 },
+        "origine_m": {
+          "description": "Décalage soustrait avant écriture binaire (précision float32 loin de l'origine). Coordonnée réelle = valeur fichier + origine_m.",
+          "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3
+        },
+        "densite_moyenne_m": { "type": "number", "minimum": 0 }
+      }
+    },
+    "zone": {
+      "type": "object",
+      "required": ["nom", "min", "max"],
+      "properties": {
+        "nom": { "type": "string" },
+        "min": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+        "max": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+        "rotation_deg": { "type": "number", "description": "Rotation de la boîte autour de Z, centre de la boîte (Nord de travail)." }
+      }
+    },
+    "parametres": { "type": "object" },
+    "graine": { "type": "integer" }
+  }
+}

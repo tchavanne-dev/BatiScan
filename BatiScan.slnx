@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/BatiScan.Core/BatiScan.Core.csproj" />
+    <Project Path="src/BatiScan.Revit/BatiScan.Revit.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/BatiScan.Core.Tests/BatiScan.Core.Tests.csproj" />
+  </Folder>
+</Solution>

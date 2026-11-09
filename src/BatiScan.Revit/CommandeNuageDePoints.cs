@@ -264,7 +264,7 @@ public class CommandeNuageDePoints : IExternalCommand
         {
             try
             {
-                System.Windows.Forms.Clipboard.SetText(rapport);
+                System.Windows.Clipboard.SetText(rapport);
             }
             catch
             {

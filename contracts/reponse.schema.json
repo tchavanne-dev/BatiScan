@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://batiscan.local/contracts/reponse/1.0.0",
+  "title": "BatiScan – réponse moteur Python → C#",
+  "description": "Contrat 1.0.0. Le moteur retourne des PROPOSITIONS ; il ne décide pas et n'écrit jamais dans Revit.",
+  "type": "object",
+  "required": ["contract_version", "id_requete", "operation", "statut", "moteur", "unites", "repere", "source", "parametres", "nombre_points", "couverture", "propositions", "avertissements", "erreurs", "duree_s"],
+  "properties": {
+    "contract_version": { "const": "1.0.0" },
+    "id_requete": { "type": "string" },
+    "operation": { "type": "string" },
+    "statut": { "enum": ["ok", "partiel", "erreur"] },
+    "moteur": {
+      "type": "object",
+      "required": ["version", "open3d", "python"],
+      "properties": {
+        "version": { "type": "string" },
+        "open3d": { "type": "string" },
+        "python": { "type": "string" }
+      }
+    },
+    "unites": { "type": "object" },
+    "repere": { "type": "object" },
+    "source": { "type": "object" },
+    "zone": { "type": ["object", "null"] },
+    "parametres": { "type": "object", "description": "Paramètres EFFECTIFS (valeurs par défaut incluses)." },
+    "graine": { "type": "integer" },
+    "nombre_points": {
+      "type": "object",
+      "required": ["recus", "dans_zone", "traites"],
+      "properties": {
+        "recus": { "type": "integer" },
+        "dans_zone": { "type": "integer" },
+        "traites": { "type": "integer" }
+      }
+    },
+    "couverture": {
+      "type": "object",
+      "required": ["methode", "ratio"],
+      "properties": {
+        "methode": { "type": "string" },
+        "taille_cellule_m": { "type": "number" },
+        "cellules_occupees": { "type": "integer" },
+        "cellules_totales": { "type": "integer" },
+        "ratio": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "propositions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "enum": ["niveau", "mur", "trace", "poutre", "poteau", "ecart", "direction", "masque"] }
+        }
+      }
+    },
+    "avertissements": { "type": "array", "items": { "type": "string" } },
+    "erreurs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "message"],
+        "properties": {
+          "code": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      }
+    },
+    "duree_s": { "type": "number" }
+  }
+}
